@@ -1,61 +1,114 @@
-# Simple Class App
+# app-todo-hust
 
-A simple Flutter mobile application project for class.
+A Flutter todo app with Firebase Authentication and Cloud Firestore sync. The app supports Google Sign-In + Email/Password, date-based tasks, filters, and a clean UI.
 
 ## Features
 
-- **Counter**: Increment a counter with a button
-- **Todo List**: Add and remove tasks from a simple todo list
-- **Material Design**: Uses Flutter's Material Design components
+- Firebase Auth: Email/Password + Google Sign-In
+- Cloud Firestore sync (per-user)
+- Add todo with optional due date (date only)
+- Filters: All Dates, Today, This Week, No Date
+- Status filters: All, Active, Completed (with counts)
+- Calendar picker (collapsible)
+- Offline cache enabled for Firestore
 
-## Getting Started
+## Tech Stack
 
-### Prerequisites
+- Flutter (Material 3)
+- Firebase: Auth + Firestore
 
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) installed
-- A text editor or IDE (VS Code, Android Studio, or IntelliJ)
+## Setup
 
-### Installation
+### 1) Install Flutter
 
-1. Navigate to the project directory:
-   ```bash
-   cd mobile_app
-   ```
+Follow the official Flutter installation guide and ensure `flutter doctor` is green.
 
-2. Get dependencies:
-   ```bash
-   flutter pub get
-   ```
+### 2) Firebase Project
 
-3. Run the app:
-   ```bash
-   flutter run
-   ```
+Create a Firebase project and enable:
+
+- Authentication: Email/Password and Google
+- Firestore Database
+
+### 3) Firebase Config Files
+
+Download config files from Firebase Console for your project and place them here:
+
+- Android: `android/app/google-services.json`
+- iOS: `ios/Runner/GoogleService-Info.plist`
+
+### 4) iOS URL Scheme (Google Sign-In)
+
+Ensure the iOS URL scheme is added to `ios/Runner/Info.plist` (usually comes from GoogleService-Info.plist). If missing, add `REVERSED_CLIENT_ID` under `CFBundleURLSchemes`.
+
+### 5) Firestore Rules
+
+Use these rules (only the owner can read/write):
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/todos/{todoId} {
+      allow read: if request.auth != null
+        && request.auth.uid == userId
+        && resource.data.ownerId == request.auth.uid;
+
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.ownerId == request.auth.uid;
+
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.ownerId == request.auth.uid
+        && resource.data.ownerId == request.auth.uid;
+
+      allow delete: if request.auth != null
+        && request.auth.uid == userId
+        && resource.data.ownerId == request.auth.uid;
+    }
+  }
+}
+```
+
+### 6) Firestore Composite Index
+
+The app uses this query:
+
+- `ownerId` (ascending)
+- `createdAt` (ascending)
+
+Create a composite index for collection `todos` with those fields.
+
+## Run the App
+
+```bash
+flutter pub get
+flutter run -d ios
+```
+
+To run on Android, use:
+
+```bash
+flutter run -d android
+```
 
 ## Project Structure
 
 ```
 lib/
-├── main.dart          # Main app file with counter and todo features
-pubspec.yaml          # Project dependencies and configuration
+  main.dart          # App entry and UI
+android/
+  app/google-services.json
+ios/
+  Runner/GoogleService-Info.plist
 ```
 
-## Code Features
+## Notes
 
-- **StatefulWidget**: Used for managing counter and todo list state
-- **Material Design**: AppBar, Cards, ElevatedButton, FloatingActionButton, TextField, ListTile
-- **State Management**: Simple setState() for state updates
-- **Forms**: TextField with form input handling
+- Firestore offline persistence is enabled (cache unlimited).
+- If you add or change Firebase config files, do a full rebuild on iOS.
 
-## Next Steps
+## License
 
-To expand this project, you can:
-
-- Add persistent data storage using SQLite or Hive
-- Implement different screens/routes using Navigation
-- Add animations and transitions
-- Connect to a backend API
-- Add local notifications
-- Implement user authentication
-
-Enjoy building! 🚀
+MIT
