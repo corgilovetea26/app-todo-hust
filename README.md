@@ -2,6 +2,14 @@
 
 A Flutter todo app with Firebase Authentication and Cloud Firestore sync. The app supports Google Sign-In + Email/Password, date-based tasks, filters, and a clean UI.
 
+## Screenshots
+
+![Screenshot 1](docs/screenshots/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-19%20at%2023.49.00.png)
+![Screenshot 2](docs/screenshots/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-19%20at%2023.49.05.png)
+![Screenshot 3](docs/screenshots/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-19%20at%2023.49.11.png)
+![Screenshot 4](docs/screenshots/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-19%20at%2023.49.16.png)
+![Screenshot 5](docs/screenshots/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-19%20at%2023.49.48.png)
+
 ## Features
 
 - Firebase Auth: Email/Password + Google Sign-In
@@ -93,6 +101,44 @@ To run on Android, use:
 flutter run -d android
 ```
 
+## Build Release
+
+### Android (APK)
+
+```bash
+flutter build apk --release
+```
+
+Output:
+```
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+### Android (App Bundle)
+
+```bash
+flutter build appbundle --release
+```
+
+Output:
+```
+build/app/outputs/bundle/release/app-release.aab
+```
+
+### iOS (Archive)
+
+```bash
+flutter build ios --release
+```
+
+Then open Xcode and archive:
+
+```bash
+open ios/Runner.xcworkspace
+```
+
+In Xcode: **Product → Archive** to generate the release build.
+
 ## Project Structure
 
 ```
@@ -102,6 +148,8 @@ android/
   app/google-services.json
 ios/
   Runner/GoogleService-Info.plist
+docs/
+  screenshots/
 ```
 
 ## Notes
